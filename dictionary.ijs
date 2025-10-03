@@ -12,13 +12,15 @@ case. 'hash' do.
   valuetype =: 4
   valueshape =: i. 0
   keyhash =: 16!:0`''
+  keycompare =: 16!:0`''
   occupancy =: 0.5
   initsize =: 100
   NB. Parse params and update above attributes.
   parse creation_parameters
   NB. Init dictionary object in JE.
   internal_parameters =. (0 , initsize , <. initsize * % occupancy) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
-  dict =: 16!:0 (16!:_1) internal_parameters NB. FIXME - keyhash (gerund) instead of 16!:0 as x for 16!:_1 causes domain error! 
+  if. keyhash -: keycompare do. keyfn =. keyhash `: 6 else. keyfn =. keyhash `: 6 : (keycompare `: 6) end.
+  dict =: keyfn f. (16!:_1) internal_parameters 
   size =: initsize
   NB. Assign names.
   get =: dict 16!:_2
