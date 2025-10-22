@@ -76,7 +76,7 @@ test_batches =: {{)d
 'n_iter sz mx' =. y
 refdict =. conew 'refdictionary'
 params =. 'hash' ,&< ('initsize' ; initsz) , ('occupancy' ; occupancy) ,: ('keytype' ; 'boxed')
-jdict =: params conew 'jdictionary'
+jdict =. params conew 'jdictionary'
 for. i. n_iter do.
   keys =. <@":"0 vals =. sz ?@$ mx NB. Keys, vals for put.
   keys (>@[ set__refdict ])"0 vals
@@ -88,11 +88,14 @@ for. i. n_iter do.
   assert. jmask -: refmask
   assert. (refmask # vals) -: get__refdict@> refmask # keys
   assert. (jmask # vals) -: jmask # jgetans
-  del__refdict (sz ?@$ 2) # keys NB. Delete some keys.
+  del__refdict keys =. (sz ?@$ 2) # keys NB. Delete some keys.
+  del__jdict keys
 end.
 destroy__refdict ''
 destroy__jdict ''
 EMPTY
 }}
 
-(100 ; 0.7) test_batches 5 ; 10 ; 20
+(27 ; 0.7) test_batches 5 ; 10 ; 20
+(207 ; 0.6) test_batches 10 ; 100 ; 200
+(200007 ; 0.8) test_batches 5 ; 100000 ; 200000
