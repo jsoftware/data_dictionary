@@ -1,3 +1,4 @@
+
 coclass 'jdictionary'
 
 SIZE_GROWTH_GEOMETRIC_STEP =: 2
@@ -40,9 +41,18 @@ EMPTY
 
 destroy =: codestroy
 
+NB. Resize operation.  Nilad.  Allocate a larger/smaller dictionary and repopulate its keys
+NB. We have a lock on (dict) during this entire operation
 resize =: {{)m
 size =: SIZE_GROWTH_GEOMETRIC_STEP * size
-dict (16!:_1) 0 , size , <. size * % occupancy
+NB. We allocate a new DIC block of the correct size.  This is a temp whose contents, when filled, will be exchanged into (dict)
+NB. This also allocates new areas for the keys, vals, and hash/tree
+newdict =. dict (16!:_1) 0 , size , <. size * % occupancy  NB. allocate new DIC
+NB. Install the kvs from dict into newdict.  (e =. 1&(16!:_5) dict) (1) returns the list of empty key indexes; (2) erase the empty chains
+NB. to allow the key block to be freed.  Then (<<<e) { keys/vals gives the kvs:
+NB. for hashing: call (newdist 16!:_3) to rehash all the keys.  Limit the number of kvs per install to reduce temp space needed.
+NB. for red/black: copy the keys, vals, and tree from dict to newdict, each to the beginning of its area.  The tree grows from there.
+newdict  NB. Return the new block.  Its contents will be swapped with the old block so that the EPILOG for the resize will free the old keys/vals/hash
 }}
 
 NB. Utils.
