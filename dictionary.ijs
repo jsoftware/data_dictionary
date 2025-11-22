@@ -7,6 +7,7 @@ create =: {{)m
 'index_type creation_parameters' =. y
 select. index_type
 case. 'hash' do.
+  itype =: 0   NB. index type 0 is hash
   NB. Default values of params.
   keytype =: 4
   keyshape =: i. 0
@@ -35,23 +36,35 @@ case. 'hash' do.
     (prefix , '_put' , suffix) =: dict 16!:_3
     (prefix , '_del' , suffix) =: dict 16!:_4
   end.
+case. 'tree' do. itype =: 1  NB. index type 1 is tree
+case. do. 13!:8 (3)  NB. domain error if invalid 
 end.
 EMPTY
 }}
 
-destroy =: codestroy
+destroy =: {{
+smoutput (1) 16!:_5 dict  NB. clear the empty chain in the keys
+codestroy y  NB. destroy the locale, freeing everything
+}}
 
 NB. Resize operation.  Nilad.  Allocate a larger/smaller dictionary and repopulate its keys
 NB. We have a lock on (dict) during this entire operation
 resize =: {{)m
+smoutput'resize'
 size =: SIZE_GROWTH_GEOMETRIC_STEP * size
 NB. We allocate a new DIC block of the correct size.  This is a temp whose contents, when filled, will be exchanged into (dict)
 NB. This also allocates new areas for the keys, vals, and hash/tree
 newdict =. dict (16!:_1) 0 , size , <. size * % occupancy  NB. allocate new DIC
 NB. Install the kvs from dict into newdict.  (e =. 1&(16!:_5) dict) (1) returns the list of empty key indexes; (2) erase the empty chains
 NB. to allow the key block to be freed.  Then (<<<e) { keys/vals gives the kvs:
-NB. for hashing: call (newdist 16!:_3) to rehash all the keys.  Limit the number of kvs per install to reduce temp space needed.
+select. itype
+case. 0 do.
+NB. for hashing: call (newdict 16!:_3) to rehash all the keys.  Limit the number of kvs per install to reduce temp space needed.
+  empties =. (1) 16!:_5 dict   NB. get list of empties in dict, then erase the empty chains
+  (newdict 16!:_3)&((<<<empties)&{)&:>/ 2 1 { dict  NB. Install all keys from dict into newdict
+case. 1 do.
 NB. for red/black: copy the keys, vals, and tree from dict to newdict, each to the beginning of its area.  The tree grows from there.
+end.
 newdict  NB. Return the new block.  Its contents will be swapped with the old block so that the EPILOG for the resize will free the old keys/vals/hash
 }}
 

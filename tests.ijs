@@ -8,7 +8,7 @@ cocurrent 'base'
 require 'format/printf'   NB.  for debug only
 
 PRBASIC=:0   NB. 1 to display simple ops
-PRBATCH=:1   NB. 1 to display simple ops
+PRBATCH=:0   NB. 1 to display simple ops
 
 
 NB. y is name of dictionary without locale (different locales are added in the test).
@@ -44,7 +44,7 @@ test_dict_name 'd_i_c_t'
 
 NB. BASIC GET, PUT.
 cocurrent 'base'
-]params =: 'hash' ,&< ('initsize' ; 10) , ('occupancy' ; 0.66) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
+]params =: 'hash' ,&< ('initsize' ; 4) , ('occupancy' ; 0.66) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =: params conew 'jdictionary'
 
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict ' 
@@ -217,4 +217,5 @@ EMPTY
 
 (27 ; 0.7) test_batches 5 ; 10 ; 20
 (207 ; 0.6) test_batches 10 ; 100 ; 200
+(2007 ; 0.6) test_batches 10 ; 1000 ; 2000
 (200007 ; 0.8) test_batches 5 ; 100000 ; 200000
