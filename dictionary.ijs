@@ -1,4 +1,3 @@
-
 coclass 'jdictionary'
 
 SIZE_GROWTH_GEOMETRIC_STEP =: 2
@@ -21,12 +20,12 @@ case. 'hash' do.
   itype =: 0   NB. index type 0 is hash
   occupancy =: 0.5   NB. default for occupancy
   NB. Parse params and update above attributes.
-  parse creation_parameters
+  parse^:(*@#) creation_parameters
   internal_parameters =. (0 , initsize , <. initsize % occupancy) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
 case. 'tree' do.
   itype =: 1  NB. index type 1 is tree
   NB. Parse params and update above attributes.
-  parse creation_parameters
+  parse^:(*@#) creation_parameters
   if. 0 <: 4!:0 <'occupancy' do. 13!:8 (3) end.  NB. domain error if occupancy given for  tree
   internal_parameters =. (0 , initsize) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
 case. do. 13!:8 (3)  NB. domain error if invalid 
