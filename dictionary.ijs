@@ -5,39 +5,50 @@ SIZE_GROWTH_GEOMETRIC_STEP =: 2
 
 create =: {{)m
 'index_type creation_parameters' =. y
-select. index_type
+
+NB. Default values of params.
+keytype =: 4
+keyshape =: i. 0
+valuetype =: 4
+valueshape =: i. 0
+keyhash =: 16!:0`''
+keycompare =: 16!:0`''
+initsize =: 100
+name =: ''
+
+select. index_type   NB. set up params for create, based on map type
 case. 'hash' do.
   itype =: 0   NB. index type 0 is hash
-  NB. Default values of params.
-  keytype =: 4
-  keyshape =: i. 0
-  valuetype =: 4
-  valueshape =: i. 0
-  keyhash =: 16!:0`''
-  keycompare =: 16!:0`''
-  occupancy =: 0.5
-  initsize =: 100
-  name =: ''
+  occupancy =: 0.5   NB. default for occupancy
   NB. Parse params and update above attributes.
   parse creation_parameters
-  NB. Init dictionary object in JE.
-  internal_parameters =. (0 , initsize , <. initsize * % occupancy) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
-  if. keyhash -: keycompare do. keyfn =. keyhash `: 6 else. keyfn =. keyhash `: 6 : (keycompare `: 6) end.
-  dict =: keyfn f. (16!:_1) internal_parameters 
-  size =: initsize
-  NB. Assign names.
-  if. name -: '' do.
-    get =: dict 16!:_2
-    put =: dict 16!:_3
-    del =: dict 16!:_4
-  else.
-    'prefix suffix' =. split_name name
-    (prefix , '_get' , suffix) =: dict 16!:_2
-    (prefix , '_put' , suffix) =: dict 16!:_3
-    (prefix , '_del' , suffix) =: dict 16!:_4
-  end.
-case. 'tree' do. itype =: 1  NB. index type 1 is tree
+  internal_parameters =. (0 , initsize , <. initsize % occupancy) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
+case. 'tree' do.
+  itype =: 1  NB. index type 1 is tree
+  NB. Parse params and update above attributes.
+  parse creation_parameters
+  if. 0 <: 4!:0 <'occupancy' do. 13!:8 (3) end.  NB. domain error if occupancy given for  tree
+  internal_parameters =. (0 , initsize) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
 case. do. 13!:8 (3)  NB. domain error if invalid 
+end.
+
+NB. Create the map, which remains as dict.  dict is marked nondisplayable because 1 {:: dict is.
+NB. If 1 {:: dict (keys) is an indirect type, it is death to touch or display any part of 1 {:: dict that is on the empty list.
+NB. It might be better not to assign dict, to make it impossible to access 1 {:: dict from console level.  But we have to be able to run 16!:_5 on it - make 16!:_5 an adverb
+if. keyhash -: keycompare do. keyfn =. keyhash `: 6 else. keyfn =. keyhash `: 6 : (keycompare `: 6) end.
+size =: initsize
+dict =: keyfn f. (16!:_1) internal_parameters 
+
+NB. Assign names.
+if. name -: '' do.
+  get =: dict 16!:_2
+  put =: dict 16!:_3
+  del =: dict 16!:_4
+else.
+  'prefix suffix' =. split_name name
+  (prefix , '_get' , suffix) =: dict 16!:_2
+  (prefix , '_put' , suffix) =: dict 16!:_3
+  (prefix , '_del' , suffix) =: dict 16!:_4
 end.
 EMPTY
 }}
