@@ -1,4 +1,3 @@
-
 coclass 'jdictionary'
 
 SIZE_GROWTH_GEOMETRIC_STEP =: 2
@@ -19,11 +18,11 @@ case. 'hash' do.
   initsize =: 100
   name =: ''
   NB. Parse params and update above attributes.
-  parse creation_parameters
+  parse^:(*@#) creation_parameters
   NB. Init dictionary object in JE.
   internal_parameters =. (0 , initsize , <. initsize * % occupancy) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
   if. keyhash -: keycompare do. keyfn =. keyhash `: 6 else. keyfn =. keyhash `: 6 : (keycompare `: 6) end.
-  dict =: keyfn f. (16!:_1) internal_parameters 
+  dict =: keyfn f. (16!:_1) internal_parameters
   size =: initsize
   NB. Assign names.
   if. name -: '' do.
@@ -37,7 +36,7 @@ case. 'hash' do.
     (prefix , '_del' , suffix) =: dict 16!:_4
   end.
 case. 'tree' do. itype =: 1  NB. index type 1 is tree
-case. do. 13!:8 (3)  NB. domain error if invalid 
+case. do. 13!:8 (3)  NB. domain error if invalid
 end.
 EMPTY
 }}
