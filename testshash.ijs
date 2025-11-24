@@ -5,7 +5,7 @@ cocurrent 'base'
 require 'format/printf'   NB.  for debug only
 
 PRBASIC=:0   NB. 1 to display simple ops
-PRBATCH=:0   NB. 1 to display simple ops
+PRBATCH=:0   NB. 1 to display batch ops
 
 
 NB. y is name of dictionary without locale (different locales are added in the test).
@@ -203,10 +203,10 @@ qprintf^:PRBATCH'$keys keys $vals vals '
   jmask =. 0 <: jgetans
 qprintf^:PRBATCH'jgetans refmask jmask '
   assert. jmask -: refmask
-  assert. (refmask # vals) -: get__refdict@> refmask # keys
   if. 1 -: +./ refmask do. NB. Reference dictionary fails for get__refdict@> 0 $ 0
     assert. (refmask # vals) -: get__refdict@> refmask # keys
   end.
+  assert. (jmask # vals) -: jmask # jgetans
   del__refdict keys =. (sz ?@$ 2) # keys NB. Delete some keys.
   del__jdict keys
 end.
