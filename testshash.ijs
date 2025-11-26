@@ -4,7 +4,7 @@ cocurrent 'base'
 
 require 'format/printf'   NB.  for debug only
 
-PRBASIC=:0   NB. 1 to display simple ops
+PRBASIC=:1   NB. 1 to display simple ops
 PRBATCH=:0   NB. 1 to display batch ops
 
 
@@ -225,6 +225,7 @@ test_multithreading =: {{)m
 'n_iter n_threads sz' =. y
 jdict =. ('hash' ; '') conew 'jdictionary'
 'keys vals' =. ?~ ,~ sz
+NB. smoutput'put init',' ',":{.3 T.''
 vals put__jdict keys
 NB. x is jdict
 NB. y is number of iterations ; keys
@@ -233,7 +234,9 @@ prog =: {{)d
   sz =. # keys
   for_el. i. n_iter do.
     vals =. get__x keys
+NB. smoutput'put ',":el,{.3 T.''
     vals put__x keys NB. Put exactly the same keys and values.
+NB. smoutput'fin put ',":el,{.3 T.''
     keys =. vals
   end.
   }}
@@ -258,5 +261,4 @@ NB. RUN ADVANCED.
 (7 ; 0.6) test_batches 100 ; 1000 ; 2000
 (200001 ; 0.8) test_batches 5 ; 100000 ; 200000
 
-test_multithreading 100 1 10
-
+test_multithreading  10000 5 200 

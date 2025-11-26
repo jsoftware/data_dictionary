@@ -60,7 +60,6 @@ codestroy y  NB. destroy the locale, freeing everything
 NB. Resize operation.  Nilad.  Allocate a larger/smaller dictionary and repopulate its keys
 NB. We have a lock on (dict) during this entire operation
 resize =: {{)m
-smoutput'resize'
 size =: SIZE_GROWTH_GEOMETRIC_STEP * size
 NB. We allocate a new DIC block of the correct size.  This is a temp whose contents, when filled, will be exchanged into (dict)
 NB. This also allocates new areas for the keys, vals, and hash/tree
