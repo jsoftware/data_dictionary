@@ -217,7 +217,7 @@ EMPTY
 
 NB. ADVANCED.
 
-NB. Create/remove threads so that there are exactly n_threads worker threads.
+NB. Create/remove threads so that there are exactly y worker threads.
 NB. y is number of worker threads.
 set_threads =: {{)m
 {{55 T. 0}}^:] 0 >. y -~ 1 T. ''
@@ -279,17 +279,16 @@ prog =: {{)d
   for_row. i. rows do.
     res =. row magic col
     val =. get__x row
-    old_sum =. 17 T. ({. val) , < res
-    old_cnt =. 17 T. ({: val) , < 1
-    if. cols -: >: old_cnt do.
-      row_sums =: (old_sum + res) row} row_sums
+    17 T. ({. val) , < res NB. Update sum of row.
+    if. cols -: >: 17 T. ({: val) , < 1 do. NB. Update and check counter - is it the last thread?
+      row_sums =: (17 T. ({. val) , < 0) row} row_sums NB. Store sum of rows in global array.
       del__x row
     end.
   end.
   EMPTY
   }}
 set_threads n_threads
-jdict prog t.''"1 ] (rows , cols)&,"0 i. cols
+> pyxes =. jdict prog t.''"1 ] (rows , cols)&,"0 i. cols
 correct_row_sums =. +/"1 (i. rows) magic"0/ i. cols
 assert. row_sums -: correct_row_sums
 erase 'magic'
@@ -299,7 +298,7 @@ destroy__jdict ''
 EMPTY
 }}
 
-NB. RUN ADVANCED.
+NB. RUN BATCHES & ADVANCED.
 
 (21 ; 0.7) test_batches 10000 ; 10 ; 20
 (3 ; 0.7) test_batches 10000 ; 10 ; 20
@@ -309,6 +308,5 @@ NB. RUN ADVANCED.
 
 test_multithreading1 10000 5 200
 
-{{ for. i. 30 do. test_multithreading2 1 1 1 end. }} ''
-
+test_multithreading2 1 10000 3
 {{ for. i. 30 do. test_multithreading2 100 200 5 end. }} ''
