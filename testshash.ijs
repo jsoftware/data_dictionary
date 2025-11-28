@@ -217,11 +217,19 @@ EMPTY
 
 NB. ADVANCED.
 
+NB. Create/remove threads so that there are exactly n_threads worker threads.
+NB. y is number of worker threads.
+set_threads =: {{)m
+{{55 T. 0}}^:] 0 >. y -~ 1 T. ''
+{{0 T. 0}}^:] 0 >. y - 1 T. ''
+assert. y -: 1 T. ''
+}}
+
 NB. GET, PUT IN MULTIPLE THREADS.
 NB. Keys and values are integers (permutations).
 
 NB. y is number of iterations , number of worker threads , number of keys and values
-test_multithreading =: {{)m
+test_multithreading1 =: {{)m
 'n_iter n_threads sz' =. y
 jdict =. ('hash' ; '') conew 'jdictionary'
 'keys vals' =. ?~ ,~ sz
@@ -240,17 +248,55 @@ NB. smoutput'fin put ',":el,{.3 T.''
     keys =. vals
   end.
   }}
-NB. Create threads so that there are at least n_threads worker threads.
-{{0 T.0}}^:] 0 >. n_threads - 1 T. ''
-NB. Copy input for each thread and run prog in each thread.
-res_wts =. jdict prog t.''"1 (n_threads , 2) $ n_iter ; keys
 NB. Run prog in main thread.
 res_mt =. jdict prog n_iter ; keys
+NB. Copy input for each thread and run prog in each thread.
+set_threads n_threads
+res_wts =. jdict prog t.''"1 (n_threads , 2) $ n_iter ; keys
 NB. Check if result from each thread is the same as the result from main thread.
 mask =. (res_mt -: >)"0 res_wts
 erase 'prog'
 destroy__jdict ''
 mask NB. Should be equal to n_threads $ 1
+}}
+
+NB. Given matrix represented by dyadic verb magic which returns value of matrix at index (x, y).
+NB. Each thread (task per column) will add values from one column to dictionary which stores sums of rows.
+NB. Dictionary stores pairs of atomic values (currect_row_sum and counter_of_additions).
+NB. When a row is handled by all threads, the last thread (according to counter for the row) removes it from dictionary and stores value in global array.
+NB. y is number of rows , number of columns , number of threads
+test_multithreading2 =: {{)m
+'rows cols n_threads' =. y
+params =. 'hash' ,&< ('valueshape' ; 2) ,: 'valuetype' ; 'boxed'
+jdict =. params conew 'jdictionary'
+(16&T."0 (rows , 2) $ 0) put__jdict i. rows
+row_sums =: rows $ 0
+magic =: {{ (2 * x + 3) + 3 * y + 7 }}
+NB. x is jdict
+NB. y is number of rows , number of columns, index of column
+prog =: {{)d
+  'rows cols col' =. y
+  for_row. i. rows do.
+    res =. row magic col
+    val =. get__x row
+    old_sum =. 17 T. ({. val) , < res
+    old_cnt =. 17 T. ({: val) , < 1
+    if. cols -: >: old_cnt do.
+      row_sums =: (old_sum + res) row} row_sums
+      del__x row
+    end.
+  end.
+  EMPTY
+  }}
+set_threads n_threads
+jdict prog t.''"1 ] (rows , cols)&,"0 i. cols
+correct_row_sums =. +/"1 (i. rows) magic"0/ i. cols
+assert. row_sums -: correct_row_sums
+erase 'magic'
+erase 'prog'
+erase 'row_sums'
+destroy__jdict ''
+EMPTY
 }}
 
 NB. RUN ADVANCED.
@@ -261,4 +307,8 @@ NB. RUN ADVANCED.
 (7 ; 0.6) test_batches 100 ; 1000 ; 2000
 (200001 ; 0.8) test_batches 5 ; 100000 ; 200000
 
-test_multithreading  10000 5 200 
+test_multithreading1 10000 5 200
+
+{{ for. i. 30 do. test_multithreading2 1 1 1 end. }} ''
+
+{{ for. i. 30 do. test_multithreading2 100 200 5 end. }} ''
