@@ -1,13 +1,12 @@
-NB. INITIALIZATION.
-NB. Test name attribute.
 cocurrent 'base'
 
-require 'format/printf'   NB.  for debug only
+require 'format/printf'   NB. for debug only
 
-PRBASIC=:1   NB. 1 to display simple ops
-PRBATCH=:0   NB. 1 to display batch ops
+PRBASIC =: 0   NB. 1 to display simple ops
+PRBATCH =: 0   NB. 1 to display batch ops
 
-
+NB. INITIALIZATION.
+NB. Test name attribute.
 NB. y is name of dictionary without locale (different locales are added in the test).
 test_dict_name =: {{)m
 op_names_boxed =. (y , '_del') ; (y , '_get') ; y , '_put'
@@ -44,68 +43,71 @@ cocurrent 'base'
 ]params =: 'hash' ,&< ('initsize' ; 4) , ('occupancy' ; 0.66) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =: params conew 'jdictionary'
 
+{{
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 1 2 3 put__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-1 2 3 -: get__mydict 2 3
+assert. 1 2 3 -: get__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 7 8 9 put__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-7 8 9 -: get__mydict 2 3
+assert. 7 8 9 -: get__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 (1 2 3,:4 5 6) put__mydict 2 3,:2 3  NB. Double put existent
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-4 5 6 -: get__mydict 2 3
+assert. 4 5 6 -: get__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 del__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 (5 6 7,:1 2 3) put__mydict 2 3,:2 3  NB. Double put nonexistent
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-1 2 3 -: get__mydict 2 3
+assert. 1 2 3 -: get__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 4 5 6 put__mydict 1 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-4 5 6 -: get__mydict 1 3
+assert. 4 5 6 -: get__mydict 1 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 2 3 4 put__mydict 4 5
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 3 4 5 put__mydict 5 6
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-(_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict 2 3 , 4 5 ,: 5 6
+assert. (_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict 2 3 , 4 5 ,: 5 6
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-4 5 6 -: get__mydict 1 3
+assert. 4 5 6 -: get__mydict 1 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 (4 5 6,:5 6 7) put__mydict 6 7,:7 8
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-3 4 5 -: get__mydict 5 6
+assert. 3 4 5 -: get__mydict 5 6
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-get__mydict :: (100"_) 7 7
+assert. 100 -: get__mydict :: (100"_) 7 7
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-90 91 92 -: 90 91 92 get__mydict 7 7
+assert. 90 91 92 -: 90 91 92 get__mydict 7 7
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-50 51 52 put__mydict 7 7  NB. Put to nonexistent
+assert. 50 51 52 put__mydict 7 7  NB. Put to nonexistent
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-50 51 52 -: get__mydict 7 7
+assert. 50 51 52 -: get__mydict 7 7
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-60 61 62 put__mydict 7 7  NB. Put to existent
+assert. 60 61 62 put__mydict 7 7  NB. Put to existent
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-60 61 62 -: get__mydict 7 7
+assert. 60 61 62 -: get__mydict 7 7
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-(10 11 12,:20 21 22) put__mydict 8 8,:8 8  NB. Double put nonexistent
+assert. (10 11 12,:20 21 22) put__mydict 8 8,:8 8  NB. Double put nonexistent
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-20 21 22 -: get__mydict 8 8
+assert. 20 21 22 -: get__mydict 8 8
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-(30 31 32,40 41 42,:50 51 52) put__mydict 9 9,9 9,:9 9  NB. Triple put nonexistent - keeps last
+assert. (30 31 32,40 41 42,:50 51 52) put__mydict 9 9,9 9,:9 9  NB. Triple put nonexistent - keeps last
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-50 51 52 -: get__mydict 9 9
+assert. 50 51 52 -: get__mydict 9 9
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-(60 61 62,:70 71 72) put__mydict 8 8,:8 8  NB. Double put existent
+assert. (60 61 62,:70 71 72) put__mydict 8 8,:8 8  NB. Double put existent
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-70 71 72 -: get__mydict 8 8
+assert. 70 71 72 -: get__mydict 8 8
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-(80 81 82,83 84 85,:90 91 92) put__mydict 9 9,9 9,:9 9  NB. Triple put existent - keeps last
+assert. (80 81 82,83 84 85,:90 91 92) put__mydict 9 9,9 9,:9 9  NB. Triple put existent - keeps last
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
-90 91 92 -: get__mydict 9 9
+assert. 90 91 92 -: get__mydict 9 9
+EMPTY
+}} ''
 
 destroy__mydict ''
 
@@ -113,56 +115,205 @@ NB. Repeat for boxed key
 ]params =: 'hash' ,&< ('initsize' ; 10) , ('occupancy' ; 0.66) , ('keytype' ; 'boxed') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =: params conew 'jdictionary'
 
+{{
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 1 2 3 put__mydict <"(0) 2 3
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-1 2 3 -: get__mydict <"(0) 2 3
+assert. 1 2 3 -: get__mydict <"(0) 2 3
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 4 5 6 put__mydict <"(0) 1 3
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-4 5 6 -: get__mydict <"(0) 1 3
+assert. 4 5 6 -: get__mydict <"(0) 1 3
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 2 3 4 put__mydict <"(0) 4 5
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 3 4 5 put__mydict <"(0) 5 6
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-(_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict <"(0) 2 3 , 4 5 ,: 5 6
+assert. (_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict <"(0) 2 3 , 4 5 ,: 5 6
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-4 5 6 -: get__mydict <"(0) 1 3
+assert. 4 5 6 -: get__mydict <"(0) 1 3
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 (4 5 6,:5 6 7) put__mydict <"(0) 6 7,:7 8
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-3 4 5 -: get__mydict <"(0) 5 6
+assert. 3 4 5 -: get__mydict <"(0) 5 6
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-get__mydict :: (100"_) <"(0) 7 7
+assert. 100 -: get__mydict :: (100"_) <"(0) 7 7
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-90 91 92 -: 90 91 92 get__mydict <"(0) 7 7
+assert. 90 91 92 -: 90 91 92 get__mydict <"(0) 7 7
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 50 51 52 put__mydict <"(0) 7 7  NB. Put to nonexistent
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-50 51 52 -: get__mydict <"(0) 7 7
+assert. 50 51 52 -: get__mydict <"(0) 7 7
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 60 61 62 put__mydict <"(0) 7 7  NB. Put to existent
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-60 61 62 -: get__mydict <"(0) 7 7
+assert. 60 61 62 -: get__mydict <"(0) 7 7
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 (10 11 12,:20 21 22) put__mydict <"(0) 8 8,:8 8  NB. Double put nonexistent
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-20 21 22 -: get__mydict <"(0) 8 8
+assert. 20 21 22 -: get__mydict <"(0) 8 8
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 (30 31 32,40 41 42,:50 51 52) put__mydict <"(0) 9 9,9 9,:9 9  NB. Triple put nonexistent - keeps last
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-50 51 52 -: get__mydict <"(0) 9 9
+assert. 50 51 52 -: get__mydict <"(0) 9 9
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 (60 61 62,:70 71 72) put__mydict <"(0) 8 8,:8 8  NB. Double put existent
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-70 71 72 -: get__mydict <"(0) 8 8
+assert. 70 71 72 -: get__mydict <"(0) 8 8
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
 (80 81 82,83 84 85,:90 91 92) put__mydict <"(0) 9 9,9 9,:9 9  NB. Triple put existent - keeps last
 qprintf^:PRBASIC'(<@<@<@<@(0&(16!:_5)){&.>2&{.@}.)dict__mydict '
-90 91 92 -: get__mydict <"(0) 9 9
+assert. 90 91 92 -: get__mydict <"(0) 9 9
+EMPTY
+}} ''
 
 destroy__mydict ''
+
+erase 'mydict params'
+
+NB. INCORRECT KEYS/VALUES.
+
+get_error =: {{)a
+u :: (<:@(13!:11)@'' >@{ 9!:8@'')
+}}
+
+{{
+params =. 'hash' ,&< 'valueshape' ; 5
+jdict =. params conew 'jdictionary'
+assert. 'domain error' -: (i. 5) put__jdict get_error 2.3 3.4
+assert. 'domain error' -: (2 5 $ 'abcde') put__jdict get_error 0 1
+assert. 'domain error' -: (3 5 $ 3.14) put__jdict get_error 2 3 4
+assert. 'rank error' -: _1 get__jdict get_error 100
+assert. 'domain error' -: del__jdict get_error 'abc'
+destroy__jdict ''
+EMPTY
+}} ''
+
+NB. TYPES AND SHAPES.
+
+coclass 'naivedictionary'
+
+create =: {{
+keys =: 0 $ a:
+vals =: 0 $ a:
+}}
+
+destroy =: codestroy
+
+has =: {{ keys e.~ < y }}
+
+put =: {{
+del y
+keys =: keys , < y
+vals =: vals , < x
+EMPTY
+}}
+
+get =: {{ > vals {~ keys i. < y }}
+
+del =: {{
+idx =. keys i. < y
+if. idx < # keys do.
+  keys =: keys -. < y
+  vals =: (idx {. vals) , (>: idx) }. vals
+end.
+assert. (# keys) -: # vals
+EMPTY
+}}
+
+cocurrent 'base'
+
+rand_integer =: {{ ? <. 3 }}
+rand_floating =: {{ 8 c. -: rand_integer '' }}
+rand_boolean =: {{ ? 2 }}
+rand_byte =: {{ ({~ ?@#) 'abc' }}
+rand_complex =: {{ (rand_floating '') j. rand_floating '' }}
+rand_extended =: {{ x: rand_integer '' }}
+rand_rational =: {{ x: rand_floating '' }}
+rand_boxed =: {{ < (2 3 $ rand_complex '') ; 1 2 $ rand_integer '' }}
+
+NB. x is jdict
+NB. y is gerund generating atom of keytype  ;
+NB.      gerund generating atom of valuetype ;
+NB.      shape of key ;
+NB.      shape of value ;
+NB.      shape of batch ;
+NB.      number of iterations
+test_type =: {{)d
+'genkey genval keyshape valshape batchshape n_iter' =. y
+naivedict =. '' conew 'naivedictionary'
+keyrank =. # keyshape
+valrank =. # valshape
+for. i. n_iter do.
+  NB. Put.
+  keys =. (batchshape , keyshape) genkey"0@$ 0
+  vals =. (batchshape , valshape) genval"0@$ 0
+  vals put__naivedict"(valrank , keyrank) keys
+  vals put__x keys
+  NB. Get.
+  keys =. (batchshape , keyshape) genkey"0@$ 0
+  vals =. (batchshape , valshape) genval"0@$ 0
+  naivemask =. has__naivedict"keyrank keys
+  jgetans =. (valshape $ _1) get__x keys NB. Obviously (valshape $ _1) does not work for boolean, literal and boxed values.
+  jmask =. +./@,"valrank ] _1 ~: jgetans
+  assert. jmask -: naivemask
+  naivegetans =. get__naivedict"keyrank (, naivemask) # (_ , keyshape) ($ ,) keys
+  if. 1 -: +./ , naivemask do.
+    assert. naivegetans -: (, jmask) # (_ , valshape) ($ ,) jgetans
+  end.
+  NB. Delete.
+  keys =. ((<. -: batchshape) , keyshape) genkey"0@$ 0
+  del__naivedict"keyrank keys
+  del__x keys
+end.
+destroy__naivedict ''
+destroy__x ''
+EMPTY
+}}
+
+keyshape =: 3 2
+valueshape =: 5 8
+params =. 'hash' ,&< ('keytype' ; 'boolean') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
+jdict =: params conew 'jdictionary'
+jdict test_type rand_boolean`'' ; rand_integer`'' ; keyshape ; valueshape ; 5 25 ; 100
+
+keyshape =: 2 3
+valueshape =: 4 5 4
+params =. 'hash' ,&< ('valuetype' ; 'floating') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
+jdict =: params conew 'jdictionary'
+jdict test_type rand_integer`'' ; rand_floating`'' ; keyshape ; valueshape ; 100 ; 100
+
+keyshape =: 7 1
+valueshape =: 1 7
+params =. 'hash' ,&< ('keytype' ; 'floating') , ('valuetype' ; 'complex') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
+jdict =: params conew 'jdictionary'
+jdict test_type rand_floating`'' ; rand_complex`'' ; keyshape ; valueshape ; 10 10 ; 100
+
+keyshape =: 3 3
+valueshape =: 2 2 2
+params =. 'hash' ,&< ('keytype' ; 'complex') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
+jdict =: params conew 'jdictionary'
+jdict test_type rand_complex`'' ; rand_integer`'' ; keyshape ; valueshape ; 2 3 4 5 ; 100
+
+keyshape =: 10
+valueshape =: 10
+params =. 'hash' ,&< ('keytype' ; 'extended') , ('valuetype' ; 'rational') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
+jdict =: params conew 'jdictionary'
+jdict test_type rand_extended`'' ; rand_rational`'' ; keyshape ; valueshape ; 7 7 ; 100
+
+keyshape =: 10
+valueshape =: 5 5
+params =. 'hash' ,&< ('keytype' ; 'literal') , ('valuetype' ; 'extended') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
+jdict =: params conew 'jdictionary'
+jdict test_type rand_byte`'' ; rand_extended`'' ; keyshape ; valueshape ; 100 ; 100
+
+keyshape =: 2 2
+valueshape =: 100 100
+params =. 'hash' ,&< ('keytype' ; 'boxed') , ('valuetype' ; 'floating') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
+jdict =: params conew 'jdictionary'
+jdict test_type rand_boxed`'' ; rand_floating`'' ; keyshape ; valueshape ; 25 2 ; 100
+
+erase 'jdict keyshape valueshape rand_boolean rand_boxed rand_byte rand_complex rand_integer rand_floating rand_extended rand_rational'
 
 NB. GET, PUT, DEL IN BATCHES.
 
@@ -188,9 +339,9 @@ NB. y is number of batches (iterations) ; size of batch ; max element.
 test_batches =: {{)d
 'initsz occupancy' =. x
 'n_iter sz mx' =. y
-refdict__   =: refdict =. conew 'refdictionary'
+refdict =. conew 'refdictionary'
 params =. 'hash' ,&< ('initsize' ; initsz) , ('occupancy' ; occupancy) ,: ('keytype' ; 'boxed')
-jdict__   =: jdict =. params conew 'jdictionary'
+jdict =. params conew 'jdictionary'
 for. i. n_iter do.
   keys =. <@":"0 vals =. sz ?@$ mx NB. Keys, vals for put.
   keys (>@[ set__refdict ])"0 vals
@@ -257,7 +408,8 @@ NB. Check if result from each thread is the same as the result from main thread.
 mask =. (res_mt -: >)"0 res_wts
 erase 'prog'
 destroy__jdict ''
-mask NB. Should be equal to n_threads $ 1
+assert. mask -: n_threads $ 1
+EMPTY
 }}
 
 NB. Given matrix represented by dyadic verb magic which returns value of matrix at index (x, y).
@@ -281,7 +433,7 @@ prog =: {{)d
     val =. get__x row
     17 T. ({. val) , < res NB. Update sum of row.
     if. cols -: >: 17 T. ({: val) , < 1 do. NB. Update and check counter - is it the last thread?
-      row_sums =: (17 T. ({. val) , < 0) row} row_sums NB. Store sum of rows in global array.
+      row_sums =: (17 T. ({. val) , < 0) row} row_sums NB. Store sum of row in global array row_sums.
       del__x row
     end.
   end.
@@ -300,8 +452,8 @@ EMPTY
 
 NB. RUN BATCHES & ADVANCED.
 
-(21 ; 0.7) test_batches 10000 ; 10 ; 20
-(3 ; 0.7) test_batches 10000 ; 10 ; 20
+(21 ; 0.9) test_batches 10000 ; 10 ; 20
+(3 ; 0.1) test_batches 10000 ; 10 ; 20
 (142 ; 0.6) test_batches 1000 ; 100 ; 200
 (7 ; 0.6) test_batches 100 ; 1000 ; 2000
 (200001 ; 0.8) test_batches 5 ; 100000 ; 200000
