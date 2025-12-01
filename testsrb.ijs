@@ -39,73 +39,92 @@ test_dict_name 'mydict'
 test_dict_name 'my_d_ict'
 test_dict_name 'd_i_c_t'
 
-NB. BASIC GET, PUT.
+NB. BASIC GET, PUT, DEL.
 cocurrent 'base'
 ]params =: 'tree' ,&< ('initsize' ; 4) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =: params conew 'jdictionary'
+qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 1 2 3 put__mydict 2 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 1 2 3 -: get__mydict 2 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 7 8 9 put__mydict 2 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 7 8 9 -: get__mydict 2 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (1 2 3,:4 5 6) put__mydict 2 3,:2 3  NB. Double put existent
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 4 5 6 -: get__mydict 2 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 del__mydict 2 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+100 100 100 -: 100 100 100 get__mydict 2 3
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (5 6 7,:1 2 3) put__mydict 2 3,:2 3  NB. Double put nonexistent
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 1 2 3 -: get__mydict 2 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 4 5 6 put__mydict 1 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 4 5 6 -: get__mydict 1 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 2 3 4 put__mydict 4 5
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 3 4 5 put__mydict 5 6
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict 2 3 , 4 5 ,: 5 6
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 4 5 6 -: get__mydict 1 3
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (4 5 6,:5 6 7) put__mydict 6 7,:7 8
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 3 4 5 -: get__mydict 5 6
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 get__mydict :: (100"_) 7 7
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 90 91 92 -: 90 91 92 get__mydict 7 7
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 50 51 52 put__mydict 7 7  NB. Put to nonexistent
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 50 51 52 -: get__mydict 7 7
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 60 61 62 put__mydict 7 7  NB. Put to existent
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 60 61 62 -: get__mydict 7 7
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (10 11 12,:20 21 22) put__mydict 8 8,:8 8  NB. Double put nonexistent
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 20 21 22 -: get__mydict 8 8
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (30 31 32,40 41 42,:50 51 52) put__mydict 9 9,9 9,:9 9  NB. Triple put nonexistent - keeps last
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 50 51 52 -: get__mydict 9 9
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (60 61 62,:70 71 72) put__mydict 8 8,:8 8  NB. Double put existent
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 70 71 72 -: get__mydict 8 8
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 (80 81 82,83 84 85,:90 91 92) put__mydict 9 9,9 9,:9 9  NB. Triple put existent - keeps last
-qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 90 91 92 -: get__mydict 9 9
+del__mydict 2 3
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+del__mydict 1 3
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+del__mydict 9 9
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+del__mydict 8 8
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+del__mydict 7 7
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+del__mydict 4 5
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+del__mydict 6 7
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
+del__mydict 7 8
+13!:8@3^:-. dict__mydict 16!:_7 [ qprintf^:PRBASIC'0(16!:_5)dict__mydict (dict__mydict)16!:_7 '
 
 destroy__mydict ''
 

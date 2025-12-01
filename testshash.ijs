@@ -4,7 +4,7 @@ cocurrent 'base'
 
 require 'format/printf'   NB.  for debug only
 
-PRBASIC=:1   NB. 1 to display simple ops
+PRBASIC=:0   NB. 1 to display simple ops
 PRBATCH=:0   NB. 1 to display batch ops
 
 
@@ -58,6 +58,8 @@ qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 4 5 6 -: get__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 del__mydict 2 3
+qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
+100 100 100 -: 100 100 100 get__mydict 2 3
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
 (5 6 7,:1 2 3) put__mydict 2 3,:2 3  NB. Double put nonexistent
 qprintf^:PRBASIC'0(16!:_5)dict__mydict a.i.0{::dict__mydict }.dict__mydict '
