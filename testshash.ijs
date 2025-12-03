@@ -310,7 +310,7 @@ jdict =: params conew 'jdictionary'
 jdict test_type rand_byte`'' ; rand_extended`'' ; keyshape ; valueshape ; 100 ; 100
 
 keyshape =: 2 2
-valueshape =: 100 100
+valueshape =: 10 10
 params =. 'hash' ,&< ('keytype' ; 'boxed') , ('valuetype' ; 'floating') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =: params conew 'jdictionary'
 jdict test_type rand_boxed`'' ; rand_floating`'' ; keyshape ; valueshape ; 25 2 ; 100
@@ -464,3 +464,56 @@ test_multithreading1 10000 5 200
 
 test_multithreading2 1 10000 3
 {{ for. i. 30 do. test_multithreading2 100 200 5 end. }} ''
+
+NB. BENCHMARKS.
+
+NB. y is number of threads ;
+NB.      number of keys and values ;
+NB.      shape of key and value ;
+NB.      number of batches ;
+NB.      size of batch
+benchmark_multithreading =: {{)m
+'n_threads n_kvs kv_shape n_b b_sz' =. y
+ks =. (n_kvs , kv_shape) ?@$ 1e9 NB. Generate random keys.
+vs =. (?~ n_kvs) { ks NB. Values are shuffled keys.
+NB. Generate batches.
+bs_ks =. ((n_b , >. 0.9 * b_sz) ?@$ >. 0.1 * # vs) { vs NB. 90% of batch chosen from 10% of keys.
+bs_ks =. bs_ks ,"_1 ((n_b , >. 0.1 * b_sz) ?@$ # vs) { vs NB. 10% of batch chosen from all keys.
+NB. Initialize dictionary.
+params =. 'hash' ,&< ('valueshape' ; kv_shape) ,: 'keyshape' ; kv_shape
+jdict =. params conew 'jdictionary'
+vs put__jdict ks
+NB. Define verbs for thread.
+NB. x is jdict.
+NB. y is list of batches.
+prog_get =: {{)d
+  y =. (?~ # y) { y NB. Shuffle batches.
+  f =. {{)d
+    for_b. y do.
+      get__x^:100 b
+    end.
+    EMPTY
+    }}
+  timex 'x f y' NB. Return time of execution.
+  }}
+prog_get_put =: {{)d
+  f =. {{)d
+    for_b. y do.
+      ks =. get__x^:100 b
+      vs =. (? # ks) |. ks NB. Shuffle by cyclic-shift by random number.
+      vs put__x ks
+    end.
+    EMPTY
+    }}
+  timex 'x f y' NB. Return time of execution.
+  }}
+set_threads n_threads
+inputs =. n_threads $ ,: bs_ks
+times_get =. > jdict prog_get t.''"_1 inputs
+times_get_put =. > jdict prog_get_put t.''"_1 inputs
+erase 'prog_get prog_get_put'
+destroy__jdict ''
+(n_threads * n_b * 100 * b_sz) % >./ times_get ,. times_get_put
+}}
+
+benchmark_multithreading 3 ; 1e6 ; 4 5 ; 100 ; 100
