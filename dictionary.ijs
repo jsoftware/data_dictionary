@@ -39,16 +39,12 @@ size =: initsize
 dict =: keyfn f. (16!:_1) internal_parameters 
 
 NB. Assign names.
-if. name -: '' do.
-  get =: dict 16!:_2
-  put =: dict 16!:_3
-  del =: dict 16!:_4
-else.
-  'prefix suffix' =. split_name name
-  (prefix , '_get' , suffix) =: dict 16!:_2
-  (prefix , '_put' , suffix) =: dict 16!:_3
-  (prefix , '_del' , suffix) =: dict 16!:_4
-end.
+if. name -: '' do. prefix =. suffix =. '' else. 'prefix suffix' =. (,{:)&.>/\. split_name name end.
+(prefix , 'get' , suffix) =: dict 16!:_2
+(prefix , 'put' , suffix) =: dict 16!:_3
+(prefix , 'del' , suffix) =: dict 16!:_4
+(prefix , 'has' , suffix) =: dict 16!:_12
+if. index_type -: 'tree' do. (prefix , 'getkv' , suffix) =: dict 16!:_6 end.  NB. getkv only on rb trees
 EMPTY
 }}
 
