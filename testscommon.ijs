@@ -121,7 +121,9 @@ for. i. n_iter do.
   vals =. (batchshape , valshape) genval"0@$ 0
   naivemask =. has__naivedict"keyrank keys
   jgetans =. (valshape $ _1) get__x keys NB. Obviously (valshape $ _1) does not work for boolean, literal and boxed values.
+  jhasans =. has__x keys
   jmask =. +./@,"valrank ] _1 ~: jgetans
+  assert. jmask -: jhasans
   assert. jmask -: naivemask
   naivegetans =. get__naivedict"keyrank (, naivemask) # (_ , keyshape) ($ ,) keys
   if. 1 -: +./ , naivemask do.
@@ -216,8 +218,10 @@ qprintf^:PRBATCH'$keys keys $vals vals '
 qprintf^:PRBATCH'$keys keys $vals vals '
   refmask =. has__refdict@> keys
   jgetans =. _1 get__jdict keys
+  jhasans =. has__jdict keys
   jmask =. 0 <: jgetans
 qprintf^:PRBATCH'jgetans refmask jmask '
+  assert. jmask -: jhasans
   assert. jmask -: refmask
   if. 1 -: +./ refmask do. NB. Reference dictionary fails for get__refdict@> 0 $ 0
     assert. (refmask # vals) -: get__refdict@> refmask # keys
