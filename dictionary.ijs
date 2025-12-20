@@ -16,10 +16,10 @@ initsize =: 100
 name =: ''
 
 if. (-: (index_type {.~ -@#)) 'concurrent' do.
-  concurrent =. 1
+  singlethreaded =. 0
   index_type =. (- # ' concurrent') }. index_type
 else.
-  concurrent =. 0
+  singlethreaded =. 1
 end.
 
 select. index_type   NB. set up params for create, based on map type
@@ -28,7 +28,7 @@ case. 'hash' do.
   occupancy =: 0.5   NB. default for occupancy
   NB. Parse params and update above attributes.
   parse^:(*@#) creation_parameters
-  internal_parameters =. (0 , initsize , <. initsize % occupancy) ; concurrent ; (keytype ; keyshape) ; < (valuetype ; valueshape)
+  internal_parameters =. (0 , initsize , <. initsize % occupancy) ; singlethreaded ; (keytype ; keyshape) ; < (valuetype ; valueshape)
 case. 'tree' do.
   itype =: 1  NB. index type 1 is tree
   NB. Parse params and update above attributes.
@@ -36,7 +36,7 @@ case. 'tree' do.
   if. 0 <: 4!:0 < 'occupancy' do.
      13!:8 (3) [ 'Parameter not supported in tree dictionary: occupancy'
   end.
-  internal_parameters =. (0 , initsize) ; concurrent ; (keytype ; keyshape) ; < (valuetype ; valueshape)
+  internal_parameters =. (0 , initsize) ; singlethreaded ; (keytype ; keyshape) ; < (valuetype ; valueshape)
 case. do.
   13!:8 (3) [ 'Incorrect index type'
 end.
