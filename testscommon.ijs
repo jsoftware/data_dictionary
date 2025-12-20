@@ -1,7 +1,7 @@
 require 'format/printf'   NB. for debug only
 
 PRBATCH =: 0   NB. 1 to display batch ops
-INDEX_TYPES =: 'hash' ; 'tree'
+INDEX_TYPES =: ('hash concurrent' ; 'tree concurrent')&,^:IF64 'hash' ; 'tree'
 
 NB. INITIALIZATION.
 NB. Test name attribute.
@@ -50,6 +50,8 @@ assert. 'domain error' -: (i. 5) put__jdict GetError 2.3 3.4
 assert. 'domain error' -: (2 5 $ 'abcde') put__jdict GetError 0 1
 assert. 'domain error' -: (3 5 $ 3.14) put__jdict GetError 2 3 4
 assert. 'rank error' -: _1 get__jdict GetError 100
+assert. 'domain error' -: get__jdict GetError 3.14
+assert. 'domain error' -: has__jdict GetError 2r3 3r4
 assert. 'domain error' -: del__jdict GetError 'abc'
 destroy__jdict ''
 EMPTY

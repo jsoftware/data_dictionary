@@ -15,20 +15,30 @@ keycompare =: 16!:0`''
 initsize =: 100
 name =: ''
 
+if. (-: (index_type {.~ -@#)) 'concurrent' do.
+  singlethreaded =. 0
+  index_type =. (- # ' concurrent') }. index_type
+else.
+  singlethreaded =. 1
+end.
+
 select. index_type   NB. set up params for create, based on map type
 case. 'hash' do.
   itype =: 0   NB. index type 0 is hash
   occupancy =: 0.5   NB. default for occupancy
   NB. Parse params and update above attributes.
   parse^:(*@#) creation_parameters
-  internal_parameters =. (0 , initsize , <. initsize % occupancy) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
+  internal_parameters =. (0 , initsize , <. initsize % occupancy) ; singlethreaded ; (keytype ; keyshape) ; < (valuetype ; valueshape)
 case. 'tree' do.
   itype =: 1  NB. index type 1 is tree
   NB. Parse params and update above attributes.
   parse^:(*@#) creation_parameters
-  if. 0 <: 4!:0 <'occupancy' do. 13!:8 (3) end.  NB. domain error if occupancy given for  tree
-  internal_parameters =. (0 , initsize) ; '' ; (keytype ; keyshape) ; < (valuetype ; valueshape)
-case. do. 13!:8 (3)  NB. domain error if invalid 
+  if. 0 <: 4!:0 < 'occupancy' do.
+     13!:8 (3) [ 'Parameter not supported in tree dictionary: occupancy'
+  end.
+  internal_parameters =. (0 , initsize) ; singlethreaded ; (keytype ; keyshape) ; < (valuetype ; valueshape)
+case. do.
+  13!:8 (3) [ 'Incorrect index type'
 end.
 
 NB. Create the map, which remains as dict.  dict is marked nondisplayable because 1 {:: dict is.
@@ -36,7 +46,7 @@ NB. If 1 {:: dict (keys) is an indirect type, it is death to touch or display an
 NB. It might be better not to assign dict, to make it impossible to access 1 {:: dict from console level.  But we have to be able to run 16!:_5 on it - make 16!:_5 an adverb
 if. keyhash -: keycompare do. keyfn =. keyhash `: 6 else. keyfn =. keyhash `: 6 : (keycompare `: 6) end.
 size =: initsize
-dict =: keyfn f. (16!:_1) internal_parameters 
+dict =: keyfn f. (16!:_1) internal_parameters
 
 NB. Assign names.
 if. name -: '' do. prefix =. suffix =. '' else. 'prefix suffix' =. (,{:)&.>/\. split_name name end.
