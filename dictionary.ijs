@@ -49,7 +49,7 @@ EMPTY
 }}
 
 destroy =: {{
-smoutput (1) 16!:_5 dict  NB. clear the empty chain in the keys
+(1) 16!:_5 dict  NB. clear the empty chain in the keys to avoid errors freeing it
 codestroy y  NB. destroy the locale, freeing everything
 }}
 
@@ -65,11 +65,11 @@ case. 0 do.
 NB. for hashing: call (newdict 16!:_3) to rehash all the keys.  Limit the number of kvs per install to reduce temp space needed.
 NB. Install the kvs from dict into newdict.  (e =. 1&(16!:_5) dict) (1) returns the list of empty key indexes; (2) erase the empty chains
 NB. to allow the key block to be freed.  Then (<<<e) { keys/vals gives the kvs:
-  empties =. (1) 16!:_5 dict   NB. get list of empties in dict, then erase the empty chains
+  empties =. (1) 16!:_5 dict   NB. get list of empties in dict, then erase the empty chains.  Prevents free error when releasing dict
   (newdict 16!:_3)&((<<<empties)&{)&:>/ 2 1 { dict  NB. Install all keys from dict into newdict
 case. 1 do.
   newdict =. dict (16!:_1) 0 , size  NB. allocate new DIC (tree)
-  NB. for red/black: copying the keys, vals, and tree from dict to newdict is done in JE
+  NB. for red/black: copying the keys, vals, and tree from dict to newdict is done in JE when we return
 end.
 newdict  NB. Return the new block.  Its contents will be swapped with the old block so that the EPILOG for the resize will free the old keys/vals/hash
 }}
