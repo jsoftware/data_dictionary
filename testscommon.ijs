@@ -57,6 +57,78 @@ destroy__jdict ''
 EMPTY
 }}"0 INDEX_TYPES
 
+NB. BASIC.
+
+{{
+params =. y , < ('initsize' ; 4) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
+mydict =. params conew 'jdictionary'
+1 2 3 put__mydict 2 3
+assert. 1 2 3 -: get__mydict 2 3
+7 8 9 put__mydict 2 3
+assert. 7 8 9 -: get__mydict 2 3
+(1 2 3,:4 5 6) put__mydict 2 3,:2 3  NB. Double put existent
+assert. 4 5 6 -: get__mydict 2 3
+del__mydict 2 3
+100 100 100 -: 100 100 100 get__mydict 2 3
+(5 6 7,:1 2 3) put__mydict 2 3,:2 3  NB. Double put nonexistent
+assert. 1 2 3 -: get__mydict 2 3
+4 5 6 put__mydict 1 3
+assert. 4 5 6 -: get__mydict 1 3
+2 3 4 put__mydict 4 5
+3 4 5 put__mydict 5 6
+assert. (_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict 2 3 , 4 5 ,: 5 6
+assert. 4 5 6 -: get__mydict 1 3
+(4 5 6,:5 6 7) put__mydict 6 7,:7 8
+assert. 3 4 5 -: get__mydict 5 6
+assert. 100 -: get__mydict :: (100"_) 7 7
+assert. 90 91 92 -: 90 91 92 get__mydict 7 7
+50 51 52 put__mydict 7 7  NB. Put to nonexistent
+assert. 50 51 52 -: get__mydict 7 7
+60 61 62 put__mydict 7 7  NB. Put to existent
+assert. 60 61 62 -: get__mydict 7 7
+(10 11 12,:20 21 22) put__mydict 8 8,:8 8  NB. Double put nonexistent
+assert. 20 21 22 -: get__mydict 8 8
+(30 31 32,40 41 42,:50 51 52) put__mydict 9 9,9 9,:9 9  NB. Triple put nonexistent - keeps last
+assert. 50 51 52 -: get__mydict 9 9
+(60 61 62,:70 71 72) put__mydict 8 8,:8 8  NB. Double put existent
+assert. 70 71 72 -: get__mydict 8 8
+(80 81 82,83 84 85,:90 91 92) put__mydict 9 9,9 9,:9 9  NB. Triple put existent - keeps last
+assert. 90 91 92 -: get__mydict 9 9
+destroy__mydict ''
+EMPTY
+}}"0 INDEX_TYPES
+
+{{
+params =. y , < ('initsize' ; 10) , ('keytype' ; 'boxed') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
+mydict =. params conew 'jdictionary'
+1 2 3 put__mydict <"(0) 2 3
+assert. 1 2 3 -: get__mydict <"(0) 2 3
+4 5 6 put__mydict <"(0) 1 3
+assert. 4 5 6 -: get__mydict <"(0) 1 3
+2 3 4 put__mydict <"(0) 4 5
+3 4 5 put__mydict <"(0) 5 6
+assert. (_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict <"(0) 2 3 , 4 5 ,: 5 6
+assert. 4 5 6 -: get__mydict <"(0) 1 3
+(4 5 6,:5 6 7) put__mydict <"(0) 6 7,:7 8
+assert. 3 4 5 -: get__mydict <"(0) 5 6
+assert. 100 -: get__mydict :: (100"_) <"(0) 7 7
+assert. 90 91 92 -: 90 91 92 get__mydict <"(0) 7 7
+50 51 52 put__mydict <"(0) 7 7  NB. Put to nonexistent
+assert. 50 51 52 -: get__mydict <"(0) 7 7
+60 61 62 put__mydict <"(0) 7 7  NB. Put to existent
+assert. 60 61 62 -: get__mydict <"(0) 7 7
+(10 11 12,:20 21 22) put__mydict <"(0) 8 8,:8 8  NB. Double put nonexistent
+assert. 20 21 22 -: get__mydict <"(0) 8 8
+(30 31 32,40 41 42,:50 51 52) put__mydict <"(0) 9 9,9 9,:9 9  NB. Triple put nonexistent - keeps last
+assert. 50 51 52 -: get__mydict <"(0) 9 9
+(60 61 62,:70 71 72) put__mydict <"(0) 8 8,:8 8  NB. Double put existent
+assert. 70 71 72 -: get__mydict <"(0) 8 8
+(80 81 82,83 84 85,:90 91 92) put__mydict <"(0) 9 9,9 9,:9 9  NB. Triple put existent - keeps last
+assert. 90 91 92 -: get__mydict <"(0) 9 9
+destroy__mydict ''
+EMPTY
+}}"0 INDEX_TYPES
+
 NB. TYPES AND SHAPES.
 
 coclass 'naivedictionary'
