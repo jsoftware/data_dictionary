@@ -3,6 +3,8 @@ require 'format/printf'   NB. for debug only
 PRBATCH =: 0   NB. 1 to display batch ops
 INDEX_TYPES_CONCURRENT =: 'hash concurrent' ; 'tree concurrent'
 INDEX_TYPES =: INDEX_TYPES_CONCURRENT , 'hash' ; 'tree'
+KEYHASHES =: 16!:0`'' , 7:`'' , {{ {. , y }}`''
+KEYCOMPARES =: 16!:0`'' , -@:(16!:0)`'' , {{ x 16!:0 y }}`''
 
 NB. INITIALIZATION.
 NB. Test name attribute.
@@ -61,7 +63,8 @@ EMPTY
 NB. BASIC.
 
 {{
-params =. y , < ('initsize' ; 4) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
+'index_type keyhash keycompare' =. <"0 y
+params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initsize' ; 4) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =. params conew 'jdictionary'
 1 2 3 put__mydict 2 3
 assert. 1 2 3 -: get__mydict 2 3
@@ -95,12 +98,18 @@ assert. 50 51 52 -: get__mydict 9 9
 assert. 70 71 72 -: get__mydict 8 8
 (80 81 82,83 84 85,:90 91 92) put__mydict 9 9,9 9,:9 9  NB. Triple put existent - keeps last
 assert. 90 91 92 -: get__mydict 9 9
+assert. 1 1 -: has__mydict 8 8,:9 9
+del__mydict 9 9
+assert. 1 0 -: has__mydict 8 8,:9 9
+del__mydict 8 8
+assert. 0 -: has__mydict 8 8
 destroy__mydict ''
 EMPTY
-}}"0 INDEX_TYPES
+}}"1 INDEX_TYPES ,"0 1"0 _ KEYHASHES ,."0 _ KEYCOMPARES
 
 {{
-params =. y , < ('initsize' ; 10) , ('keytype' ; 'boxed') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
+'index_type keyhash keycompare' =. <"0 y
+params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initsize' ; 4) , ('keytype' ; 'boxed') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =. params conew 'jdictionary'
 1 2 3 put__mydict <"(0) 2 3
 assert. 1 2 3 -: get__mydict <"(0) 2 3
@@ -126,9 +135,11 @@ assert. 50 51 52 -: get__mydict <"(0) 9 9
 assert. 70 71 72 -: get__mydict <"(0) 8 8
 (80 81 82,83 84 85,:90 91 92) put__mydict <"(0) 9 9,9 9,:9 9  NB. Triple put existent - keeps last
 assert. 90 91 92 -: get__mydict <"(0) 9 9
+del__mydict <"(0) 8 8
+del__mydict <"(0) 9 9
 destroy__mydict ''
 EMPTY
-}}"0 INDEX_TYPES
+}}"1 INDEX_TYPES ,"0 1"0 _ KEYHASHES ,."0 _ KEYCOMPARES
 
 NB. TYPES AND SHAPES.
 
