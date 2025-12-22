@@ -1,7 +1,8 @@
 require 'format/printf'   NB. for debug only
 
 PRBATCH =: 0   NB. 1 to display batch ops
-INDEX_TYPES =: ('hash concurrent' ; 'tree concurrent')&,^:IF64 'hash' ; 'tree'
+INDEX_TYPES_CONCURRENT =: 'hash concurrent' ; 'tree concurrent'
+INDEX_TYPES =: INDEX_TYPES_CONCURRENT , 'hash' ; 'tree'
 
 NB. INITIALIZATION.
 NB. Test name attribute.
@@ -314,7 +315,7 @@ jdict =. params conew 'jdictionary'
 jdict test_type rand_boxed`'' ; rand_boxed`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 }}"0 INDEX_TYPES
 
-NB. GET, PUT, DEL IN BATCHES.
+NB. GET, PUT, DEL, HAS IN BATCHES.
 
 NB. Keys are boxed strings, values are integers.
 
@@ -373,3 +374,121 @@ INDEX_TYPES test_batches 3 ; 10000 ; 10 ; 20
 INDEX_TYPES test_batches 142 ; 1000 ; 100 ; 200
 INDEX_TYPES test_batches 7 ; 100 ; 1000 ; 2000
 INDEX_TYPES test_batches 200001 ; 5 ; 100000 ; 200000
+
+NB. MULTITHREADING.
+
+NB. Create/remove threads so that there are exactly y worker threads.
+NB. y is number of worker threads.
+set_threads =: {{)m
+{{55 T. 0}}^:] 0 >. y -~ 1 T. ''
+{{0 T. 0}}^:] 0 >. y - 1 T. ''
+assert. y -: 1 T. ''
+EMPTY
+}}
+
+NB. GET, PUT IN MULTIPLE THREADS.
+NB. Keys and values are integers (permutations).
+
+NB. x is boxed name of index type.
+NB. y is number of iterations , number of worker threads , number of keys and values.
+test_multithreading1 =: {{)d
+'n_iter n_threads sz' =. y
+jdict =. (x , < '') conew 'jdictionary'
+'keys vals' =. ?~ ,~ sz
+NB. smoutput'put init',' ',":{.3 T.''
+vals put__jdict keys
+NB. x is jdict
+NB. y is number of iterations ; keys
+prog =: {{)d
+  'n_iter keys' =. y
+  sz =. # keys
+  for_el. i. n_iter do.
+    vals =. get__x keys
+NB. smoutput'put ',":el,{.3 T.''
+    vals put__x keys NB. Put exactly the same keys and values.
+NB. smoutput'fin put ',":el,{.3 T.''
+    keys =. vals
+  end.
+  }}
+NB. Run prog in main thread.
+res_mt =. jdict prog n_iter ; keys
+NB. Copy input for each thread and run prog in each thread.
+set_threads n_threads
+res_wts =. jdict prog t.''"1 (n_threads , 2) $ n_iter ; keys
+NB. Check if result from each thread is the same as the result from main thread.
+mask =. (res_mt -: >)"0 res_wts
+erase 'prog'
+destroy__jdict ''
+assert. mask -: n_threads $ 1
+EMPTY
+}}"0 _
+
+NB. Given matrix represented by dyadic verb magic which returns value of matrix at index (x, y).
+NB. Each thread (task per column) will add values from one column to dictionary which stores sums of rows.
+NB. Dictionary stores pairs of atomic values (currect_row_sum and counter_of_additions).
+NB. When a row is handled by all threads, the last thread (according to counter for the row) removes it from dictionary and stores value in global array.
+NB. x is boxed name of index type.
+NB. y is number of rows , number of columns , number of threads
+test_multithreading2 =: {{)d
+'rows cols n_threads' =. y
+params =. x , < ('valueshape' ; 2) ,: 'valuetype' ; 'boxed'
+jdict =. params conew 'jdictionary'
+(16&T."0 (rows , 2) $ 0) put__jdict i. rows
+row_sums =: rows $ 0
+magic =: {{ (2 * x + 3) + 3 * y + 7 }}
+NB. x is jdict
+NB. y is number of rows , number of columns, index of column
+prog =: {{)d
+  'rows cols col' =. y
+  for_row. i. rows do.
+    res =. row magic col
+    val =. get__x row
+    17 T. ({. val) , < res NB. Update sum of row.
+    if. cols -: >: 17 T. ({: val) , < 1 do. NB. Update and check counter - is it the last thread?
+      row_sums =: (17 T. ({. val) , < 0) row} row_sums NB. Store sum of row in global array row_sums.
+      del__x row
+    end.
+  end.
+  EMPTY
+  }}
+set_threads n_threads
+> pyxes =. jdict prog t.''"1 ] (rows , cols)&,"0 i. cols
+correct_row_sums =. +/"1 (i. rows) magic"0/ i. cols
+assert. row_sums -: correct_row_sums
+erase 'magic'
+erase 'prog'
+erase 'row_sums'
+destroy__jdict ''
+EMPTY
+}}"0 _
+
+NB. x is boxed name of index type.
+NB. y is number of iterations , number of worker threads.
+test_multithreading3 =: {{)d
+'n_iter n_threads' =. y
+jdict =. (x , < '') conew 'jdictionary'
+NB. x is jdict
+NB. y is number of iterations
+prog =: {{)d
+  for_k. i. y do.
+    _1 get__x 2 | k
+    k put__x 2 | >: k
+    has__x 2 | >: k
+    del__x 2 | k
+  end.
+  }}
+NB. Run prog in each thread.
+set_threads n_threads
+> pyxes =. jdict prog t.''"0 n_threads $ n_iter
+erase 'prog'
+destroy__jdict ''
+EMPTY
+}}"0 _
+
+NB. RUN MULTITHREADING.
+{{
+INDEX_TYPES_CONCURRENT test_multithreading1 10000 5 200
+INDEX_TYPES_CONCURRENT test_multithreading2 1 10000 3
+{{ for. i. 30 do. INDEX_TYPES_CONCURRENT test_multithreading2 100 200 5 end. }} ''
+{{ for. i. 30 do. INDEX_TYPES_CONCURRENT test_multithreading3 10000 5 end. }} ''
+}}^:IF64 ''
