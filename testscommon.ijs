@@ -3,7 +3,7 @@ require 'format/printf'   NB. for debug only
 PRBATCH =: 0   NB. 1 to display batch ops
 INDEX_TYPES_CONCURRENT =: 'hash concurrent' ; 'tree concurrent'
 INDEX_TYPES =: INDEX_TYPES_CONCURRENT , 'hash' ; 'tree'
-KEYHASHES =: 16!:0`'' , 7:`'' , {{ {. , y }}`''
+KEYHASHES =: 16!:0`'' , 7:`'' , {{ 16!:0 y }}`''
 KEYCOMPARES =: 16!:0`'' , -@:(16!:0)`'' , {{ x 16!:0 y }}`''
 
 NB. INITIALIZATION.
@@ -47,6 +47,10 @@ u :: (<:@(13!:11)@'' >@{ 9!:8@'')
 }}
 
 {{
+assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'keyshape' ; 2 0 2
+assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'keyshape' ; 0
+assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'valueshape' ; 7 0
+assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'valueshape' ; 0 0
 params =. y , < 'valueshape' ; 5
 jdict =. params conew 'jdictionary'
 assert. 'domain error' -: (i. 5) put__jdict GetError 2.3 3.4
@@ -56,6 +60,20 @@ assert. 'rank error' -: _1 get__jdict GetError 100
 assert. 'domain error' -: get__jdict GetError 3.14
 assert. 'domain error' -: has__jdict GetError 2r3 3r4
 assert. 'domain error' -: del__jdict GetError 'abc'
+destroy__jdict ''
+EMPTY
+}}"0 INDEX_TYPES
+
+NB. ERROR FROM CUSTOM KEYHASH/KEYCOMPARE.
+
+{{
+params =. y , < ('keycompare' ,&< 13!:8@16`'') ,: ('keyhash' ,&< 13!:8@16`'') NB. Return spelling error.
+jdict =. params conew 'jdictionary'
+42 put__jdict GetError 7 NB. No comparison for empty tree dictionary.
+assert. 'spelling error' -: 43 put__jdict GetError 8
+assert. 'spelling error' -: get__jdict GetError 7
+assert. 'spelling error' -: has__jdict GetError 7
+assert. 'spelling error' -: del__jdict GetError 7
 destroy__jdict ''
 EMPTY
 }}"0 INDEX_TYPES
@@ -206,15 +224,17 @@ for. i. n_iter do.
   keys =. (batchshape , keyshape) genkey"0@$ 0
   vals =. (batchshape , valshape) genval"0@$ 0
   naivemask =. has__naivedict"keyrank keys
-  fillatom =. {. valuetype__x c. ''
-  jgetans =. (valshape $ fillatom) get__x keys
   jhasans =. has__x keys
-  jmask =. +./@,"valrank ] fillatom ~: jgetans
-  assert. jmask -: jhasans
-  assert. jmask -: naivemask
-  naivegetans =. get__naivedict"keyrank (, naivemask) # (_ , keyshape) ($ ,) keys
-  if. 1 -: +./ , naivemask do.
-    assert. naivegetans -: (, jmask) # (_ , valshape) ($ ,) jgetans
+  assert. jhasans -: naivemask
+  if. -. valshape -: 0 do.
+    fillatom =. {. valuetype__x c. ''
+    jgetans =. (valshape $ fillatom) get__x keys
+    jmask =. +./@,"valrank ] fillatom ~: jgetans
+    assert. jmask -: naivemask
+    naivegetans =. get__naivedict"keyrank (, naivemask) # (_ , keyshape) ($ ,) keys
+    if. 1 -: +./ , naivemask do.
+      assert. naivegetans -: (, jmask) # (_ , valshape) ($ ,) jgetans
+    end.
   end.
   NB. Delete.
   keys =. ((<. -: batchshape) , keyshape) genkey"0@$ 0
@@ -226,105 +246,105 @@ destroy__x ''
 EMPTY
 }}
 
-{{
+0 1 {{
 keyshape =. 3 2
-valueshape =. 5 8
+valueshape =. 0:^:x 5 8
 params =. y , < ('keytype' ; 'boolean') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_boolean`'' ; rand_integer`'' ; keyshape ; valueshape ; 5 25 ; 100
 
 keyshape =. 2 3
-valueshape =. 4 5 4
+valueshape =. 0:^:x 4 5 4
 params =. y , < ('valuetype' ; 'floating') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_integer`'' ; rand_floating`'' ; keyshape ; valueshape ; 100 ; 100
 
 keyshape =. 7 1
-valueshape =. 1 7
+valueshape =. 0:^:x 1 7
 params =. y , < ('keytype' ; 'floating') , ('valuetype' ; 'complex') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_floating`'' ; rand_complex`'' ; keyshape ; valueshape ; 10 10 ; 100
 
 keyshape =. 3 3
-valueshape =. 2 2 2
+valueshape =. 0:^:x 2 2 2
 params =. y , < ('keytype' ; 'complex') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_complex`'' ; rand_integer`'' ; keyshape ; valueshape ; 2 3 4 5 ; 100
 
 keyshape =. 9
-valueshape =. 10
+valueshape =. 0:^:x 10
 params =. y , < ('keytype' ; 'extended') , ('valuetype' ; 'rational') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_extended`'' ; rand_rational`'' ; keyshape ; valueshape ; 7 7 ; 100
 
 keyshape =. 5
-valueshape =. 6
+valueshape =. 0:^:x 6
 params =. y , < ('keytype' ; 'rational') , ('valuetype' ; 'literal') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_rational`'' ; rand_byte`'' ; keyshape ; valueshape ; 3 2 ; 100
 
 keyshape =. 8
-valueshape =. 5 5
+valueshape =. 0:^:x 5 5
 params =. y , < ('keytype' ; 'literal') , ('valuetype' ; 'extended') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_byte`'' ; rand_extended`'' ; keyshape ; valueshape ; 100 ; 100
 
 keyshape =. 2 2
-valueshape =. 2 4
+valueshape =. 0:^:x 2 4
 params =. y , < ('keytype' ; 'boxed') , ('valuetype' ; 'boxed') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_boxed`'' ; rand_boxed`'' ; keyshape ; valueshape ; 25 2 ; 100
-}}"0 INDEX_TYPES
+}}"0 _"_ 0 INDEX_TYPES
 
-{{
+0 1 {{
 keyshape =. 3 2
-valueshape =. 5 8
+valueshape =. 0:^:x 5 8
 params =. y , < ('keytype' ; 'boolean') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_boolean`'' ; rand_integer`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 
 keyshape =. 2 3
-valueshape =. 4 5 4
+valueshape =. 0:^:x 4 5 4
 params =. y , < ('valuetype' ; 'floating') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_integer`'' ; rand_floating`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 
 keyshape =. 7 1
-valueshape =. 1 7
+valueshape =. 0:^:x 1 7
 params =. y , < ('keytype' ; 'floating') , ('valuetype' ; 'complex') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_floating`'' ; rand_complex`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 
 keyshape =. 3 3
-valueshape =. 2 2 2
+valueshape =. 0:^:x 2 2 2
 params =. y , < ('keytype' ; 'complex') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_complex`'' ; rand_integer`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 
 keyshape =. 9
-valueshape =. 10
+valueshape =. 0:^:x 10
 params =. y , < ('keytype' ; 'extended') , ('valuetype' ; 'rational') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_extended`'' ; rand_rational`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 
 keyshape =. 5
-valueshape =. 6
+valueshape =. 0:^:x 6
 params =. y , < ('keytype' ; 'rational') , ('valuetype' ; 'literal') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_rational`'' ; rand_byte`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 
 keyshape =. 8
-valueshape =. 5 5
+valueshape =. 0:^:x 5 5
 params =. y , < ('keytype' ; 'literal') , ('valuetype' ; 'extended') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_byte`'' ; rand_extended`'' ; keyshape ; valueshape ; (i. 0) ; 3000
 
 keyshape =. 2 2
-valueshape =. 2 4
+valueshape =. 0:^:x 2 4
 params =. y , < ('keytype' ; 'boxed') , ('valuetype' ; 'boxed') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_boxed`'' ; rand_boxed`'' ; keyshape ; valueshape ; (i. 0) ; 3000
-}}"0 INDEX_TYPES
+}}"0 _"_ 0 INDEX_TYPES
 
 NB. GET, PUT, DEL, HAS IN BATCHES.
 
