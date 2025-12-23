@@ -3,7 +3,7 @@ require 'format/printf'   NB. for debug only
 PRBATCH =: 0   NB. 1 to display batch ops
 INDEX_TYPES_CONCURRENT =: 'hash concurrent' ; 'tree concurrent'
 INDEX_TYPES =: INDEX_TYPES_CONCURRENT , 'hash' ; 'tree'
-KEYHASHES =: 16!:0`'' , 7:`'' , {{ 16!:0 y }}`''
+KEYHASHES =: 16!:0`'' , 7"1`'' , {{ 16!:0 y }}"1`''
 KEYCOMPARES =: 16!:0`'' , -@:(16!:0)`'' , {{ x 16!:0 y }}`''
 
 NB. INITIALIZATION.
