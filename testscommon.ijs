@@ -96,7 +96,7 @@ assert. 7 8 9 -: get__mydict 2 3
 (1 2 3,:4 5 6) put__mydict 2 3,:2 3  NB. Double put existent
 assert. 4 5 6 -: get__mydict 2 3
 assert. 1 -: len__mydict ''
-del__mydict 2 3
+assert. 1 -: del__mydict 2 3
 assert. 0 -: len__mydict ''
 100 100 100 -: 100 100 100 get__mydict 2 3
 (5 6 7,:1 2 3) put__mydict 2 3,:2 3  NB. Double put nonexistent
@@ -126,10 +126,11 @@ assert. 70 71 72 -: get__mydict 8 8
 assert. 90 91 92 -: get__mydict 9 9
 assert. 1 1 -: has__mydict 8 8,:9 9
 assert. 9 -: len__mydict ''
-del__mydict 9 9
+assert. 1 -: del__mydict 9 9
 assert. 1 0 -: has__mydict 8 8,:9 9
-del__mydict 8 8
+assert. 1 -: del__mydict 8 8
 assert. 0 -: has__mydict 8 8
+assert. 0 0 -: del__mydict 8 8,:9 9
 destroy__mydict ''
 EMPTY
 }}"1
