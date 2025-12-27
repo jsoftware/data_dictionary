@@ -5,6 +5,7 @@ INDEX_TYPES_CONCURRENT =: 'hash concurrent' ; 'tree concurrent'
 INDEX_TYPES =: INDEX_TYPES_CONCURRENT , 'hash' ; 'tree'
 KEYHASHES =: 16!:0`'' , 7"1`'' , {{ 16!:0 y }}"1`''
 KEYCOMPARES =: 16!:0`'' , -@:(16!:0)`'' , {{ x 16!:0 y }}`''
+COMBINATIONS =: INDEX_TYPES ,"0 1"0 _ KEYHASHES ,."0 _ KEYCOMPARES
 
 NB. INITIALIZATION.
 NB. Test name attribute.
@@ -51,6 +52,9 @@ assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'keyshape' ; 2 0 2
 assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'keyshape' ; 0
 assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'valueshape' ; 7 0
 assert. 'length error' -: 'jdictionary' conew~ GetError y , < 'valueshape' ; 0 0
+jdict =. 'jdictionary' conew~ 'hash' ,&< 'keyhash' ,&< _1"0`''
+'domain error' -: put__jdict GetError~ 7
+destroy__jdict ''
 params =. y , < 'valueshape' ; 5
 jdict =. params conew 'jdictionary'
 assert. 'domain error' -: (i. 5) put__jdict GetError 2.3 3.4
@@ -80,17 +84,20 @@ EMPTY
 
 NB. BASIC.
 
-{{
+test_basic1 =: {{
 'index_type keyhash keycompare' =. <"0 y
 params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initsize' ; 4) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =. params conew 'jdictionary'
+assert. 0 -: len__mydict ''
 1 2 3 put__mydict 2 3
 assert. 1 2 3 -: get__mydict 2 3
 7 8 9 put__mydict 2 3
 assert. 7 8 9 -: get__mydict 2 3
 (1 2 3,:4 5 6) put__mydict 2 3,:2 3  NB. Double put existent
 assert. 4 5 6 -: get__mydict 2 3
+assert. 1 -: len__mydict ''
 del__mydict 2 3
+assert. 0 -: len__mydict ''
 100 100 100 -: 100 100 100 get__mydict 2 3
 (5 6 7,:1 2 3) put__mydict 2 3,:2 3  NB. Double put nonexistent
 assert. 1 2 3 -: get__mydict 2 3
@@ -98,6 +105,7 @@ assert. 1 2 3 -: get__mydict 2 3
 assert. 4 5 6 -: get__mydict 1 3
 2 3 4 put__mydict 4 5
 3 4 5 put__mydict 5 6
+assert. 4 -: len__mydict ''
 assert. (_3 ]\ 1 2 3 2 3 4 3 4 5) -: get__mydict 2 3 , 4 5 ,: 5 6
 assert. 4 5 6 -: get__mydict 1 3
 (4 5 6,:5 6 7) put__mydict 6 7,:7 8
@@ -117,15 +125,16 @@ assert. 70 71 72 -: get__mydict 8 8
 (80 81 82,83 84 85,:90 91 92) put__mydict 9 9,9 9,:9 9  NB. Triple put existent - keeps last
 assert. 90 91 92 -: get__mydict 9 9
 assert. 1 1 -: has__mydict 8 8,:9 9
+assert. 9 -: len__mydict ''
 del__mydict 9 9
 assert. 1 0 -: has__mydict 8 8,:9 9
 del__mydict 8 8
 assert. 0 -: has__mydict 8 8
 destroy__mydict ''
 EMPTY
-}}"1 INDEX_TYPES ,"0 1"0 _ KEYHASHES ,."0 _ KEYCOMPARES
+}}"1
 
-{{
+test_basic2 =: {{
 'index_type keyhash keycompare' =. <"0 y
 params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initsize' ; 4) , ('keytype' ; 'boxed') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =. params conew 'jdictionary'
@@ -157,7 +166,10 @@ del__mydict <"(0) 8 8
 del__mydict <"(0) 9 9
 destroy__mydict ''
 EMPTY
-}}"1 INDEX_TYPES ,"0 1"0 _ KEYHASHES ,."0 _ KEYCOMPARES
+}}"1
+
+test_basic1 COMBINATIONS
+test_basic2 COMBINATIONS
 
 NB. TYPES AND SHAPES.
 
@@ -191,6 +203,8 @@ assert. (# keys) -: # vals
 EMPTY
 }}
 
+len =: {{ # keys }}
+
 cocurrent 'base'
 
 rand_integer =: {{ >: ? <. 3 }}
@@ -201,6 +215,7 @@ rand_complex =: {{ (rand_floating '') j. rand_floating '' }}
 rand_extended =: {{ x: rand_integer '' }}
 rand_rational =: {{ x: rand_floating '' }}
 rand_boxed =: {{ < (2 3 $ rand_complex '') ; 1 2 $ rand_integer '' }}
+rand_sparse_floating =: {{ $. 1 2.5 999 (3 ? 14)} 14 $ 0 }}
 
 NB. x is jdict
 NB. y is gerund generating atom of keytype  ;
@@ -215,11 +230,13 @@ naivedict =. '' conew 'naivedictionary'
 keyrank =. # keyshape
 valrank =. # valshape
 for. i. n_iter do.
+  assert. (len__x '') -: len__naivedict ''
   NB. Put.
   keys =. (batchshape , keyshape) genkey"0@$ 0
   vals =. (batchshape , valshape) genval"0@$ 0
   vals put__naivedict"(valrank , keyrank) keys
   vals put__x keys
+  assert. (len__x '') -: len__naivedict ''
   NB. Get.
   keys =. (batchshape , keyshape) genkey"0@$ 0
   vals =. (batchshape , valshape) genval"0@$ 0
@@ -237,9 +254,13 @@ for. i. n_iter do.
     end.
   end.
   NB. Delete.
-  keys =. ((<. -: batchshape) , keyshape) genkey"0@$ 0
+  batchshapefordel =. <. -: batchshape
+  keys =. (batchshapefordel , keyshape) genkey"0@$ 0
+  naivemask =. has__naivedict"keyrank keys
   del__naivedict"keyrank keys
-  del__x keys
+  jdelans =. del__x keys
+  assert. (len__x '') -: len__naivedict ''
+  assert. jdelans -: naivemask *. batchshapefordel ($ ,) ~: (_ , keyshape) ($ ,) keys
 end.
 destroy__naivedict ''
 destroy__x ''
@@ -294,7 +315,7 @@ valueshape =. 0:^:x 2 4
 params =. y , < ('keytype' ; 'boxed') , ('valuetype' ; 'boxed') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_boxed`'' ; rand_boxed`'' ; keyshape ; valueshape ; 25 2 ; 100
-}}"0 _"_ 0 INDEX_TYPES
+}}"0"_ 0 INDEX_TYPES
 
 0 1 {{
 keyshape =. 3 2
@@ -344,7 +365,7 @@ valueshape =. 0:^:x 2 4
 params =. y , < ('keytype' ; 'boxed') , ('valuetype' ; 'boxed') , ('keyshape' ; keyshape) ,: ('valueshape' ; valueshape)
 jdict =. params conew 'jdictionary'
 jdict test_type rand_boxed`'' ; rand_boxed`'' ; keyshape ; valueshape ; (i. 0) ; 3000
-}}"0 _"_ 0 INDEX_TYPES
+}}"0"_ 0 INDEX_TYPES
 
 NB. GET, PUT, DEL, HAS IN BATCHES.
 
@@ -414,6 +435,17 @@ set_threads =: {{)m
 {{55 T. 0}}^:] 0 >. y -~ 1 T. ''
 {{0 T. 0}}^:] 0 >. y - 1 T. ''
 assert. y -: 1 T. ''
+EMPTY
+}}
+
+NB. BASIC FROM MUTIPLE THREADS.
+NB. Each thread creates, uses and destorys its own dictionary.
+
+NB. y is number of threads.
+test_basic_multithreading =: {{
+set_threads y
+> pyxes =. test_basic1 t.''"1 COMBINATIONS
+> pyxes =. test_basic2 t.''"1 COMBINATIONS
 EMPTY
 }}
 
@@ -518,6 +550,7 @@ EMPTY
 
 NB. RUN MULTITHREADING.
 {{
+test_basic_multithreading"0 i. 5
 INDEX_TYPES_CONCURRENT test_multithreading1 10000 5 200
 INDEX_TYPES_CONCURRENT test_multithreading2 1 10000 3
 {{ for. i. 30 do. INDEX_TYPES_CONCURRENT test_multithreading2 100 200 5 end. }} ''
