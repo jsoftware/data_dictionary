@@ -3,8 +3,12 @@ coclass 'jdictionary'
 SIZE_GROWTH_GEOMETRIC_STEP =: 2
 
 create =: {{)m
-'index_type creation_parameters' =. y
-
+if. 'literal' -: datatype y do.
+  index_type =. y
+  creation_parameters =. ''
+else.
+  'index_type creation_parameters' =. y
+end.
 NB. Default values of params.
 keytype =: 4
 keyshape =: i. 0

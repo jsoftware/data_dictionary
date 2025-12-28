@@ -261,7 +261,7 @@ for. i. n_iter do.
   del__naivedict"keyrank keys
   jdelans =. del__x keys
   assert. (len__x '') -: len__naivedict ''
-  assert. jdelans -: naivemask *. batchshapefordel ($ ,) ~: (_ , keyshape) ($ ,) keys
+  assert. jdelans -: naivemask *. batchshapefordel ($ ,) ~:&.|. (_ , keyshape) ($ ,) keys
 end.
 destroy__naivedict ''
 destroy__x ''
