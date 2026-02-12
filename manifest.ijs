@@ -4,7 +4,7 @@ DESCRIPTION=: 0 : 0
 Dictionary data structure
 )
 
-VERSION=: '1.0.0'
+VERSION=: '1.1.0'
 
 RELEASE=: 'j9.7'
 
