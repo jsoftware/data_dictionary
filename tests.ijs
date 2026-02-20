@@ -40,7 +40,7 @@ NB. BASIC.
 
 test_basic1 =: {{
 'index_type keyhash keycompare' =. <"0 y
-params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initsize' ; 4) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
+params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initcapacity' ; 4) , ('keytype' ; 'integer') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =. params conew 'jdictionary'
 assert. 0 -: count__mydict ''
 1 2 3 put__mydict 2 3
@@ -94,7 +94,7 @@ EMPTY
 
 test_basic2 =: {{
 'index_type keyhash keycompare' =. <"0 y
-params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initsize' ; 4) , ('keytype' ; 'boxed') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
+params =. index_type , < ('keyhash' ,&< keyhash) , ('keycompare' ,&< keycompare) , ('initcapacity' ; 4) , ('keytype' ; 'boxed') , ('valueshape' ; 3) , ('keyshape' ; 2) ,: ('valuetype' ; 4)
 mydict =. params conew 'jdictionary'
 1 2 3 put__mydict <"(0) 2 3
 assert. 1 2 3 -: get__mydict <"(0) 2 3
@@ -128,6 +128,19 @@ EMPTY
 
 test_basic1 COMBINATIONS
 test_basic2 COMBINATIONS
+
+NB. INTERNAL RANK.
+
+{{
+d =. y conew 'jdictionary'
+7 put__d i. 3
+assert. 7 7 7 -: get__d i. 3
+destroy__d ''
+d =. 'jdictionary' conew~ y ,&< ('keyshape' ; 2) ,: 'valueshape' ; 3 3
+(i. 3 3) put__d i. 3 2
+assert. (2 3 3 $ i. 9) -: get__d i. 2 2
+destroy__d ''
+}}@> INDEX_TYPES
 
 NB. DESTROY.
 
@@ -419,7 +432,7 @@ NB. y is initial size ; number of batches (iterations) ; size of batch ; max ele
 test_batches =: {{)d
 'initsz n_iter sz mx' =. y
 refdict =. conew 'refdictionary'
-params =. x , < ('initsize' ; initsz) ,: ('keytype' ; 'boxed')
+params =. x , < ('initcapacity' ; initsz) ,: ('keytype' ; 'boxed')
 jdict =. params conew 'jdictionary'
 for. i. n_iter do.
   keys =. <@":"0 vals =. sz ?@$ mx NB. Keys, vals for put.
