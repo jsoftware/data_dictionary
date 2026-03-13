@@ -1,13 +1,13 @@
 NB. Dijkstra's algorithm.
 
-load 'dictionary'
+load 'dict'
 
 NB. x is graph, y is source vertex.
 NB. Result is array of two boxes:
 NB. * array of shortest-path distances from the source to every vertex
 NB. * predecessor array for shortest-path tree.
 dijkstra =: {{
-  q =. conew&'jdictionary' 'tree' ,&< ('keyshape' ; 2)  ,: 'valueshape' ; 0
+  q =. conew&'jdict' 'tree' ,&< ('keyshape' ; 2)  ,: 'valueshape' ; 0
   'ds ps' =. ($&_ ; $&_1)@# x  NB. Initialize distances and predecessors.
   '' put__q 0 , y [ ds =. 0 y} ds  NB. Distance to source is 0.
   while. 0 < count__q '' do.

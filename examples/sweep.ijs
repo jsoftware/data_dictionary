@@ -1,6 +1,6 @@
 NB. Sweep line.
 
-load 'dictionary'
+load 'dict'
 
 NB. x is the maximum height for jumping and falling.
 NB. y is table (rank 2) where each row represents a platform (y, x_left, x_right)
@@ -19,7 +19,7 @@ partition =: {{
   NB. * l is x-coord of platform left end
   NB. * h is y-coord of platform
   NB. * id is unique platform ID.
-  s =. 'jdictionary' conew~ 'tree concurrent' ,&< ('keytype' ; datatype y) , ('valuetype' ; 'boxed') ,: 'valueshape' ; 2
+  s =. 'jdict' conew~ 'tree concurrent' ,&< ('keytype' ; datatype y) , ('valuetype' ; 'boxed') ,: 'valueshape' ; 2
   NB. Is key r in y greater then l from value ((l , h) ; id) in x.
   NB. This tells whether entry represents non-empty platform.
   ok =. (> (0 ; 0)&{::)~

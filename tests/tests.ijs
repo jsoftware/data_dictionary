@@ -1,4 +1,4 @@
-load 'dictionary'
+load 'dict'
 
 cocurrent 'base'
 
@@ -212,7 +212,7 @@ coreset ''
 
 NB. TYPES AND SHAPES.
 
-coclass 'naivedictionary'
+coclass 'naivedict'
 
 create =: {{
 keys =: 0 $ a:
@@ -265,7 +265,7 @@ NB.      shape of batch ;
 NB.      number of iterations
 test_type =: {{)d
 'genkey genval keyshape valshape batchshape n_iter' =. y
-naivedict =. '' conew 'naivedictionary'
+naivedict =. '' conew 'naivedict'
 keyrank =. # keyshape
 valrank =. # valshape
 for. i. n_iter do.
@@ -414,7 +414,7 @@ NB. GET, PUT, DEL, HAS IN BATCHES.
 NB. Keys are boxed strings, values are integers.
 
 NB. https://code.jsoftware.com/wiki/Essays/DataStructures
-coclass 'refdictionary'
+coclass 'refdict'
 create =: 0:
 destroy =: codestroy
 okchar =: ~. (,toupper) '0123456789abcdefghijklmnopqrstuz'
@@ -431,7 +431,7 @@ NB. x is boxed name of index type.
 NB. y is initial size ; number of batches (iterations) ; size of batch ; max element.
 test_batches =: {{)d
 'initsz n_iter sz mx' =. y
-refdict =. conew 'refdictionary'
+refdict =. conew 'refdict'
 params =. x , < ('initcapacity' ; initsz) ,: ('keytype' ; 'boxed')
 jdict =. params conew 'jdict'
 for. i. n_iter do.
@@ -459,7 +459,7 @@ EMPTY
 
 NB. RUN BATCHES.
 
-9!:39 ] 3 13 NB. It makes refdictionary faster.
+9!:39 ] 3 13 NB. It makes refdict faster.
 INDEX_TYPES test_batches 3 ; 1000 ; 10 ; 20
 INDEX_TYPES test_batches 142 ; 100 ; 100 ; 200
 INDEX_TYPES test_batches 20001 ; 3 ; 10000 ; 20000

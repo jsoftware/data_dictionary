@@ -2,7 +2,7 @@ NB. Context-Tree Weighting method (lossless compression).
 NB. https://ieeexplore.ieee.org/document/382012
 NB. Numbers in the comments correspond to the formula numbers in the paper.
 
-load 'dictionary'
+load 'dict'
 
 ktratio =: >:@:+ %~ 1r2 + [ NB. (9).
 f =: {.@[ 1r2&*@:+ (* {:)~ NB. (12).
@@ -10,8 +10,8 @@ f =: {.@[ 1r2&*@:+ (* {:)~ NB. (12).
 NB. x is D.
 NB. y is x(1 - D, T).
 enc =: {{
-'a b' =. 'jdictionary' (conew ,&< conew)~ 'hash' ,&< 'keytype' ; 'extended'
-'pe pw' =. 'jdictionary' (conew ,&< conew)~ 'hash' ,&< ('keytype' ; 'extended') ,: 'valuetype' ; 'rational'
+'a b' =. 'jdict' (conew ,&< conew)~ 'hash' ,&< 'keytype' ; 'extended'
+'pe pw' =. 'jdict' (conew ,&< conew)~ 'hash' ,&< ('keytype' ; 'extended') ,: 'valuetype' ; 'rational'
 B =. 0x
 for_bit. x }. y do.
   idxs =. (bit_index ,: x) (1x , 1x&(]F::(+ +:)));.0 y
@@ -42,8 +42,8 @@ dec =: {{
 'T c' =. y
 F =. +/@:(* 1r2 ^ #\) c NB. (35).
 D =. # x
-'a b' =. 'jdictionary' (conew ,&< conew)~ 'hash' ,&< 'keytype' ; 'extended'
-'pe pw' =. 'jdictionary' (conew ,&< conew)~ 'hash' ,&< ('keytype' ; 'extended') ,: 'valuetype' ; 'rational'
+'a b' =. 'jdict' (conew ,&< conew)~ 'hash' ,&< 'keytype' ; 'extended'
+'pe pw' =. 'jdict' (conew ,&< conew)~ 'hash' ,&< ('keytype' ; 'extended') ,: 'valuetype' ; 'rational'
 B =. 0x
 for. i. T do.
   idxs =. 1x , 1x ]F::(+ +:) (-D) {. x
